@@ -32,8 +32,10 @@ jobs:
         with:
           files: release/*.exe
           generate_release_notes: true
+          token: ${{ github.token }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ github.token }}
 
       - name: Upload installer artifact (manual runs)
         if: github.event_name == 'workflow_dispatch'
