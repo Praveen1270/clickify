@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clickify — API keys</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, "Segoe UI", sans-serif;
+      font-size: 13px;
+      color: #e8e8ec;
+      background: linear-gradient(165deg, #141518 0%, #1a1b1e 45%, #16171a 100%);
+      min-height: 100vh;
+    }
+    .wrap {
+      padding: 22px 24px 28px;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+    .logo {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 12px rgba(255, 140, 20, 0.45));
+    }
+    .logo svg { width: 52px; height: 52px; display: block; }
+    .brand-text h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fafafa;
+    }
+    .brand-text .tag {
+      margin: 2px 0 0;
+      font-size: 13px;
+      color: #ff8c14;
+      font-weight: 600;
+    }
+    .lead {
+      margin: 0 0 18px;
+      padding-left: 66px;
+      color: #9ca3af;
+      line-height: 1.5;
+      font-size: 12.5px;
+    }
+
+    .card {
+      background: rgba(39, 39, 42, 0.65);
+      border: 1px solid #3f3f46;
+      border-radius: 10px;
+      padding: 14px 16px 16px;
+      margin-bottom: 12px;
+    }
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #a1a1aa;
+    }
+
+    .segment {
+      display: flex;
+      gap: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #3f3f46;
+    }
+    .segment-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: none;
+      background: #27272a;
+      color: #a1a1aa;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    .segment-btn + .segment-btn { border-left: 1px solid #3f3f46; }
+    .segment-btn:hover { background: #2e2e32; color: #e4e4e7; }
+    .segment-btn.active {
+      background: linear-gradient(180deg, #3f2a18, #2a1f14);
+      color: #ff8c14;
+      box-shadow: inset 0 0 0 1px rgba(255, 140, 20, 0.35);
+    }
+    .hint {
+      margin: 10px 0 0;
+      font-size: 12px;
+      color: #71717a;
+      line-height: 1.45;
+    }
+
+    .row {
+      display: flex;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .row input {
+      flex: 1;
+      min-width: 0;
+    }
+    .toggle-vis {
+      flex-shrink: 0;
+      padding: 0 12px;
+      border: 1px solid #3f3f46;
+      border-radius: 6px;
+      background: #27272a;
+      color: #d4d4d8;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .toggle-vis:hover { border-color: #ff8c14; color: #ff8c14; }
+
+    input[type="password"], input[type="text"] {
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid #3f3f46;
+      border-radius: 6px;
+      background: #18181b;
+      color: #f4f4f5;
+      font-size: 13px;
+    }
+    input:focus {
+      outline: none;
+      border-color: #ff8c14;
+      box-shadow: 0 0 0 2px rgba(255, 140, 20, 0.15);
+    }
+
+    .panel[hidden] { display: none !important; }
+
+    .primary {
+      width: 100%;
+      margin-top: 4px;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffb547, #ff8c14 45%, #ea580c);
+      color: #1c1008;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 12px rgba(255, 140, 20, 0.25);
+    }
+    .primary:hover { filter: brightness(1.06); }
+    .primary:active { transform: translateY(1px); }
+
+    #msg { margin-top: 14px; min-height: 1.25em; font-size: 12px; text-align: center; }
+    #msg.err { color: #f87171; }
+    #msg.ok { color: #4ade80; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="brand">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" shape-rendering="geometricPrecision">
+          <path d="M20 12L7.88 5L7.88 19Z" fill="#ff8c14" stroke="none"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>Clickify</h1>
+        <p class="tag">API keys</p>
+      </div>
+    </header>
+    <p class="lead">Keys stay on this device only. Open this screen anytime from the tray → <strong style="color:#d4d4d8">API keys…</strong></p>
+
+    <form id="form">
+      <input type="hidden" id="llmProvider" value="groq" />
+
+      <section class="card">
+        <h2>Vision model</h2>
+        <div class="segment" role="group" aria-label="Vision model">
+          <button type="button" class="segment-btn active" id="btn-llm-groq" data-llm="groq">Groq · Llama</button>
+          <button type="button" class="segment-btn" id="btn-llm-gemini" data-llm="gemini">Gemini 2.0</button>
+        </div>
+        <p class="hint" id="llm-desc">
+          Uses Groq’s Llama vision model. You need a Groq API key below.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Speech · Sarvam</h2>
+        <p class="hint" style="margin:0 0 8px">Required for voice in and voice out.</p>
+        <div class="row">
+          <input id="sarvam" name="sarvam" type="password" autocomplete="off" spellcheck="false" placeholder="Sarvam API key" />
+          <button type="button" class="toggle-vis" data-target="sarvam" aria-label="Show or hide Sarvam key">Show</button>
+        </div>
+      </section>
+
+      <section class="card panel" id="panel-groq">
+        <h2>Groq API key</h2>
+        <p class="hint" style="margin:0 0 8px">Used when “Groq · Llama” is selected.</p>
+        <div class="row">
+          <input id="groq" name="groq" type="password" autocomplete="off" spellcheck="false" placeholder="gsk_…" />
+          <button type="button" class="toggle-vis" data-target="groq" aria-label="Show or hide Groq key">Show</button>
+        </div>
+      </section>
+
+      <section class="card panel" id="panel-gemini" hidden>
+        <h2>Gemini API key</h2>
+        <p class="hint" style="margin:0 0 8px">Used when “Gemini 2.0” is selected.</p>
+        <div class="row">
+          <input id="gemini" name="gemini" type="password" autocomplete="off" spellcheck="false" placeholder="Google AI key" />
+          <button type="button" class="toggle-vis" data-target="gemini" aria-label="Show or hide Gemini key">Show</button>
+        </div>
+      </section>
+
+      <button type="submit" class="primary">Save keys</button>
+    </form>
+    <div id="msg"></div>
+  </div>
+
+  <script src="./settings.js"></script>
+</body>
+</html>

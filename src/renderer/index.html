@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Clickify</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 48px;
+      height: 48px;
+      background: transparent;
+      overflow: hidden;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* ── Cursor icon wrapper ─────────────────────────────── */
+    #orb {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      animation: entrance 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      transform-origin: 40px 24px; /* pivot at triangle tip (right) */
+    }
+
+    #orb svg {
+      width: 48px;
+      height: 48px;
+      pointer-events: none;
+    }
+
+    @keyframes entrance {
+      from { opacity: 0; transform: scale(0.2); }
+      to   { opacity: 1; transform: scale(1);   }
+    }
+
+    /* ── IDLE — orange triangle + diffuse halo (play-icon style) ─────────── */
+    #orb.idle svg { fill: #ff8c14; }
+    #orb.idle {
+      animation:
+        entrance 0.45s cubic-bezier(0.34,1.56,0.64,1) both,
+        idlePulse 3.2s ease-in-out 0.45s infinite;
+    }
+    /* No tight inner drop-shadows — those read as a dark edge / fake “3D” shadow.
+       Only soft, even blurs (0 offset) for a clean halo. */
+    @keyframes idlePulse {
+      0%,100% {
+        filter:
+          drop-shadow(0 0 10px rgba(255, 150, 90, 0.45))
+          drop-shadow(0 0 22px rgba(255, 135, 70, 0.22))
+          drop-shadow(0 0 36px rgba(255, 170, 120, 0.12));
+        transform: scale(1);
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 14px rgba(255, 155, 95, 0.55))
+          drop-shadow(0 0 28px rgba(255, 140, 80, 0.28))
+          drop-shadow(0 0 44px rgba(255, 175, 125, 0.16));
+        transform: scale(1.06);
+      }
+    }
+
+    /* ── LISTENING — red, fast pulse ─────────────────────── */
+    #orb.listening svg { fill: #ef4444; }
+    #orb.listening {
+      animation: listenPulse 0.6s ease-in-out infinite;
+    }
+    @keyframes listenPulse {
+      0%,100% {
+        filter: drop-shadow(0 0  8px rgba(239,68,68,0.85));
+        transform: scale(1);
+      }
+      50% {
+        filter: drop-shadow(0 0 18px rgba(239,68,68,1.00))
+                drop-shadow(0 0 30px rgba(239,68,68,0.50));
+        transform: scale(1.12);
+      }
+    }
+
+    /* ── THINKING — violet, hue-rotate spin ──────────────── */
+    #orb.thinking svg { fill: #6366f1; }
+    #orb.thinking {
+      animation: thinkSpin 0.9s linear infinite;
+    }
+    @keyframes thinkSpin {
+      0%   { filter: drop-shadow(0 0 10px rgba(99,102,241,0.9)) hue-rotate(0deg);   }
+      100% { filter: drop-shadow(0 0 10px rgba(99,102,241,0.9)) hue-rotate(360deg); }
+    }
+
+    /* ── SPEAKING — green, wave pulse ────────────────────── */
+    #orb.speaking svg { fill: #10b981; }
+    #orb.speaking {
+      animation: speakPulse 0.45s ease-in-out infinite;
+    }
+    @keyframes speakPulse {
+      0%,100% {
+        filter: drop-shadow(0 0  8px rgba(16,185,129,0.85));
+        transform: scale(1);
+      }
+      50% {
+        filter: drop-shadow(0 0 16px rgba(16,185,129,1.00))
+                drop-shadow(0 0 26px rgba(16,185,129,0.50));
+        transform: scale(1.09);
+      }
+    }
+
+    /* ── ERROR — orange flash ────────────────────────────── */
+    #orb.error svg { fill: #f97316; }
+    #orb.error {
+      animation: errFlash 0.5s ease-in-out infinite;
+    }
+    @keyframes errFlash {
+      0%,100% { filter: drop-shadow(0 0 10px rgba(249,115,22,0.9)); opacity: 1;   }
+      50%     { filter: drop-shadow(0 0 18px rgba(249,115,22,1.0)); opacity: 0.6; }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="orb" class="idle">
+    <!-- Equilateral ▶ (tip right); tip at (20,12) in viewBox → (40,24) px at 48×48 -->
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" shape-rendering="geometricPrecision">
+      <path d="M20 12L7.88 5L7.88 19Z" stroke="none"/>
+    </svg>
+  </div>
+
+  <script src="./renderer.js"></script>
+</body>
+</html>
