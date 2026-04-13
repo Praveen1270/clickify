@@ -101,7 +101,7 @@ clickify/
 npm run package
 ```
 
-Build output goes under `release/` (NSIS installer on Windows per `electron-builder` config), e.g. `release/Clickify Setup 0.1.0.exe`.
+Build output goes under `release/` (NSIS installer on Windows per `electron-builder` config), e.g. `release/Clickify Setup 0.1.1.exe` (version matches `package.json`).
 
 ## Publish a new installer release
 
@@ -111,8 +111,8 @@ Releases are built in GitHub Actions (`.github/workflows/release-windows.yml`).
 2. Create and push a version tag:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.1
+git push origin v0.1.1
 ```
 
 3. Open **[Releases](https://github.com/Praveen1270/clickify/releases)** — the workflow attaches **`Clickify Setup … .exe`** to that release.

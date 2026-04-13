@@ -1,6 +1,6 @@
 {
   "name": "clickify",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Real-time voice AI assistant that lives on your screen",
   "main": "dist/main/index.js",
   "scripts": {
