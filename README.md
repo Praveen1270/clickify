@@ -1,126 +1,131 @@
 # Clickify
 
-A small Electron overlay that follows your cursor. It listens when you speak, captures what is on screen, and answers with synthesized speech. The model can return a short sequence of spoken steps; the icon stays with your cursor.
-
-## Install on Windows (setup.exe)
-
-1. **Download the installer** from the **[latest GitHub Release](https://github.com/Praveen1270/clickify/releases/latest)** — get **`Clickify Setup … .exe`** (NSIS installer for Windows x64).
-
-2. **Run the installer** and complete the steps (desktop shortcut is optional; see installer options).
-
-3. **Start Clickify** from the Start menu or the shortcut.
-
-4. **API keys (first launch)** — The app does not ship with keys. If anything required is missing, the **API keys** window opens automatically. You can also open it anytime from the **tray icon → API keys…**. Keys are saved only on your PC (`%APPDATA%\Clickify\clickify.env`).
-
-| Key | When you need it |
-|-----|------------------|
-| **Sarvam** | Always (speech in and out) |
-| **Groq** | If you choose Groq as the vision model |
-| **Gemini** | If you choose Gemini as the vision model |
-
-### No release file yet?
-
-- **From this repo:** maintainers can [publish a release](#publish-a-new-installer-release) so the `.exe` is built and attached automatically.
-- **Build locally:** clone the repo, run `npm install` and `npm run package` — the installer appears under `release/` (see [Packaging](#packaging)).
+Clickify is a small Windows app that sits on your screen and follows your mouse. You speak, it looks at your screen, and it talks back with step-by-step answers.
 
 ---
 
-## How it works
+## Install (Windows)
 
-1. **Microphone** — Voice activity detection records when you talk (and ignores silence).
-2. **Screenshot** — Before each reply, the app grabs a thumbnail of the primary display (the overlay fades out so it is not in the shot).
-3. **Speech-to-text** — Audio is sent to Sarvam (`saarika`) with automatic language handling.
-4. **Vision + instructions** — The transcript and image go to your chosen LLM provider (Groq or Gemini). The model returns JSON: ordered `steps`, each with `speak` text for that step.
-5. **Speech** — Each step is spoken with Sarvam TTS in order.
+1. Open the **[latest release](https://github.com/Praveen1270/clickify/releases/latest)** and download **`Clickify Setup … .exe`**.
+2. Run the installer and finish the steps.
+3. Start Clickify from the Start menu or your desktop shortcut.
 
-Recent conversation context (last few turns, short TTL) is sent with each request so follow-ups stay coherent.
+**First time:** If something is missing, the app opens **API keys**. You can also open it from the **tray icon → API keys…**. Keys are stored only on your PC in `%APPDATA%\Clickify\clickify.env`.
 
-## Requirements
+| Key      | Needed for                          |
+|----------|-------------------------------------|
+| Sarvam   | Listening and speaking (always)     |
+| Groq     | If you pick Groq as the vision model |
+| Gemini   | If you pick Gemini as the vision model |
 
-- **Node.js** (for development) and **npm**
-- **Windows** — packaging scripts target Windows x64 (see `package.json`)
+**No `.exe` on the release page yet?** Someone with the repo can [publish a release](#publish-a-release) or you can build it yourself: `npm install`, then `npm run package` — the installer ends up in the `release/` folder.
 
-## Development setup
+---
 
-Install dependencies:
+## How to use
+
+| Shortcut              | What it does                          |
+|-----------------------|---------------------------------------|
+| **Ctrl+Shift+Space** | Hold to talk; release when you’re done |
+| **Tray icon**        | Show overlay, API keys, startup, quit |
+
+Say things like “stop” or “cancel” to interrupt playback (Telugu and Hindi phrases work too).
+
+**Tip:** Ask about what you actually see on the screen; the app sends a screenshot to the AI.
+
+---
+
+## What happens under the hood (short version)
+
+1. Your mic is used only when you’re speaking (quiet parts are skipped).
+2. The app takes a quick screenshot of your main screen (the overlay hides for a moment).
+3. Your speech is turned into text (Sarvam).
+4. The text and image go to Groq or Gemini, which returns spoken steps.
+5. Clickify reads those steps aloud (Sarvam).
+
+A little recent chat history is sent each time so follow-up questions make sense.
+
+---
+
+## Remove audio from a video (`clip.mp4`)
+
+If you have a file named **`clip.mp4`** (or any `.mp4`) and want **video only, no sound**, use **FFmpeg** (free, common tool).
+
+1. Install FFmpeg if you don’t have it: [ffmpeg.org/download.html](https://ffmpeg.org/download.html) (or `winget install ffmpeg` on Windows).
+2. Open a terminal in the folder that contains your video.
+3. Run:
+
+```bash
+ffmpeg -i clip.mp4 -c copy -an clip_no_audio.mp4
+```
+
+- **`-i clip.mp4`** — your input file (change the name if yours is different).
+- **`-an`** — removes all audio tracks.
+- **`-c copy`** — copies the video without re-encoding (fast; same quality).
+
+The new file is **`clip_no_audio.mp4`**. To overwrite the original instead, use a temporary name first, then rename—overwriting the same file FFmpeg is reading can cause errors.
+
+**If you need to re-encode** (for example copy fails), try:
+
+```bash
+ffmpeg -i clip.mp4 -c:v libx264 -an clip_no_audio.mp4
+```
+
+---
+
+## For developers
+
+**You need:** Node.js, npm, and Windows (the build is set up for Windows x64).
+
+Install and run from source:
 
 ```bash
 npm install
 ```
 
-**From source (development)** — Copy `.env.example` to `.env` in the project root and add your keys.
-
-**Installed app** — Keys from the API keys UI are stored in `clickify.env` under your user data directory. If both a project `.env` and `clickify.env` exist while developing, the user file overrides.
-
-| Variable | Purpose |
-|----------|---------|
-| `SARVAM_API_KEY` | Speech-to-text and text-to-speech |
-| `GROQ_API_KEY` | Vision LLM when using Groq |
-| `GEMINI_API_KEY` | Vision LLM when using Gemini |
-| `LLM_PROVIDER` | `groq` (default) or `gemini` |
-
-Groq uses `meta-llama/llama-4-scout-17b-16e-instruct`. Gemini uses `gemini-2.0-flash`.
-
-## Run (dev)
+Copy `.env.example` to `.env` and add your API keys. Same variables as in the table above, plus `LLM_PROVIDER` (`groq` or `gemini`).
 
 ```bash
 npm start
 ```
 
-This builds TypeScript and launches Electron. The triangle icon tracks the cursor; the window ignores mouse input so clicks pass through to apps underneath.
-
-## Controls
-
-| Action | Result |
-|--------|--------|
-| **Ctrl+Shift+Space** | Push-to-talk: start/stop the voice pipeline |
-| **Tray icon** | Show the overlay, **API keys…**, launch at startup, quit |
-
-Spoken stop phrases (e.g. “stop”, “cancel”) can interrupt playback; Telugu and Hindi phrases are included in the stop list.
-
-## Project layout
-
-```
-clickify/
-├── assets/
-│   └── icon.png           # App + tray icon (orange triangle; generated on build)
-├── src/
-│   ├── main/index.ts      # Electron: tray, overlay, IPC, Groq/Gemini, Sarvam
-│   ├── preload/index.ts   # `clickify` bridge for the renderer
-│   └── renderer/          # Cursor overlay, VAD, playback, step runner
-├── scripts/
-│   ├── generate-icon.js   # Writes assets/icon.png before compile
-│   └── copy-assets.js
-├── dist/                  # Build output
-└── package.json
-```
-
-## Packaging
+**Build the installer:**
 
 ```bash
 npm run package
 ```
 
-Build output goes under `release/` (NSIS installer on Windows per `electron-builder` config), e.g. `release/Clickify Setup 0.1.1.exe` (version matches `package.json`).
+Output: `release/` (e.g. `Clickify Setup 0.1.1.exe`).
 
-## Publish a new installer release
+**Project folders (overview):**
 
-Releases are built in GitHub Actions (`.github/workflows/release-windows.yml`).
+- `src/main/` — Electron main process (tray, APIs, overlay wiring)
+- `src/renderer/` — Overlay UI, voice, playback
+- `assets/` — App icon
 
-1. Bump `version` in `package.json` if needed.
-2. Create and push a version tag:
+---
+
+## Publish a release
+
+GitHub Actions builds the Windows installer (`.github/workflows/release-windows.yml`).
+
+1. Update `version` in `package.json` if needed.
+2. Create and push a tag, for example:
 
 ```bash
 git tag v0.1.1
 git push origin v0.1.1
 ```
 
-3. Open **[Releases](https://github.com/Praveen1270/clickify/releases)** — the workflow attaches **`Clickify Setup … .exe`** to that release.
+3. Check **[Releases](https://github.com/Praveen1270/clickify/releases)** — the workflow attaches the setup `.exe`.
 
-You can also run **Actions → Release Windows installer → Run workflow** to build without a tag; download the artifact from the workflow run.
+You can also run **Actions → Release Windows installer → Run workflow** and download the artifact.
 
-## Tips
+---
 
-- Ask clear questions about what is visible on screen; the model reasons over the screenshot resolution above.
-- The overlay uses opacity (not `hide()`) during capture so the audio graph keeps running reliably.
-- TTS language/voice mapping uses `en-IN`, `hi-IN`, and `te-IN` presets in the main process.
+## More detail (optional)
+
+- **Installed app keys** live in `clickify.env` under your user data folder. While developing, that file overrides a project `.env` if both exist.
+- **Models:** Groq uses `meta-llama/llama-4-scout-17b-16e-instruct`; Gemini uses `gemini-2.0-flash`.
+- **Languages:** TTS uses `en-IN`, `hi-IN`, and `te-IN` presets.
+- The overlay stays visible (opacity) during screenshots so audio recording stays stable.
