@@ -49,6 +49,12 @@ A little recent chat history is sent each time so follow-up questions make sense
 
 ## Remove audio from a video (`clip.mp4`)
 
+Demo (screen recording of the steps):
+
+<video src="https://raw.githubusercontent.com/Praveen1270/clickify/main/docs/how-to-remove-audio-from-video.mp4" controls playsinline preload="metadata" width="720"></video>
+
+*[If the player does not show, open the file in the repo: [`docs/how-to-remove-audio-from-video.mp4`](docs/how-to-remove-audio-from-video.mp4)]*
+
 If you have a file named **`clip.mp4`** (or any `.mp4`) and want **video only, no sound**, use **FFmpeg** (free, common tool).
 
 1. Install FFmpeg if you don’t have it: [ffmpeg.org/download.html](https://ffmpeg.org/download.html) (or `winget install ffmpeg` on Windows).
@@ -102,6 +108,7 @@ Output: `release/` (e.g. `Clickify Setup 0.1.1.exe`).
 - `src/main/` — Electron main process (tray, APIs, overlay wiring)
 - `src/renderer/` — Overlay UI, voice, playback
 - `assets/` — App icon
+- `docs/` — Extra files for the README (e.g. demo video)
 
 ---
 
